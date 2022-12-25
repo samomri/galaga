@@ -1,10 +1,5 @@
 body {
-    background: url(http://andreypokrovskiy.com/image_hosting/boredom/space-bg.jpg) repeat;
-	-webkit-animation: backdrop_roll linear 100s infinite;
-    -moz-animation: backdrop_roll linear 100s infinite;
-    -ms-animation: backdrop_roll linear 100s infinite;
-    -o-animation: backdrop_roll linear 100s infinite;
-    animation: backdrop_roll linear 100s infinite;
-
-  }
+    background: url(http://andreypokrovskiy.com/image_hosting/boredom/space-bg.jpg) ;
+	
+}
 

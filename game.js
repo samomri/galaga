@@ -1,6 +1,8 @@
 // Get a reference to the canvas element
 const canvas = document.getElementById("gameCanvas");
-
+document.body.style.overflow = "hidden";
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
 // Get a reference to the canvas context, which is used to draw on the canvas
 const ctx = canvas.getContext("2d");
 
@@ -21,6 +23,7 @@ const player = {
   width: 50,
   height: 50,
   speed: 15,
+  hit: false,
 };
 
 // Create the enemies array
@@ -35,7 +38,6 @@ function createEnemies() {
   for (let i = 0; i < 9; i++) {
     // Choose a random enemy sprite
     const spriteIndex = Math.floor(Math.random() * enemySprites.length);
-    console.log(spriteIndex)
     // Add a new enemy object to the enemies array
     enemies.push({
       x: Math.random() * (canvas.width - 50),
@@ -104,8 +106,8 @@ function shoot() {
     
 // Create a function to check for collisions
 function checkCollisions() {
-// Check for collisions between bullets and enemies
-for (let i = 0; i < bullets.length; i++) {
+  // Check for collisions between bullets and enemies
+  for (let i = 0; i < bullets.length; i++) {
     const bullet = bullets[i];
 
     for (let j = 0; j < enemies.length; j++) {
@@ -119,34 +121,45 @@ for (let i = 0; i < bullets.length; i++) {
         // Remove the bullet and enemy
             bullets.splice(i, 1);
             enemies.splice(j, 1);
+            score += 100;
+            updateScore();
             i--;
             break;
         }
     }
-}
+  }
 
 // Check for collisions between enemies and the player
-for (const enemy of enemies) {
+  for (const enemy of enemies) {
     if (
         enemy.x >= player.x &&
         enemy.x <= player.x + player.width &&
         enemy.y >= player.y &&
         enemy.y <= player.y + player.height
     ) {
-    // Game over
-        console.log("Game over");
+        player.x=canvas.width / 2,
+        player.y=canvas.height -100,
+        player.width=50,
+        player.height=50,
+        player.speed=15,
+        player.hit=true,
+        lives--;
+        updateScore();
     }
-    }
+  }
 }
-
 // Create a function to draw the game state
 function draw() {
 // Clear the canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
 // Draw the player
+  if(!player.hit){
     ctx.drawImage(playerSprite, player.x, player.y, player.width, player.height);
-
+  } else{
+    ctx.drawImage(playerSprite, player.x=canvas.width / 2, player.y=canvas.height -100, player.width=50, player.height=50);
+    player.hit=false
+  }
 // Draw the enemies
     for (const enemy of enemies) {
         ctx.drawImage(enemy.sprite, enemy.x, enemy.y, enemy.width, enemy.height);
@@ -174,17 +187,6 @@ function update() {
     draw();
 }
 
-// Set up the event listeners to handle player input
-document.addEventListener("keydown", (event) => {
-    if (event.code === "ArrowLeft") {
-        movePlayer("left", event.timeStamp);
-    } else if (event.code === "ArrowRight") {
-        movePlayer("right", event.timeStamp);
-    } else if (event.code === "Space") {
-        shoot();
-    }
-});
-
 // Get a reference to the score element
 const scoreElement = document.getElementById("score");
 
@@ -199,17 +201,17 @@ function updateScore() {
   scoreElement.innerHTML = `Score: ${score} Lives: ${lives}`;
 }
 
-// Update the score and lives when an enemy is killed
-function enemyKilled() {
-  score += 100;
-  updateScore();
-}
+// Set up the event listeners to handle player input
+document.addEventListener("keydown", (event) => {
+    if (event.code === "ArrowLeft") {
+        movePlayer("left", event.timeStamp);
+    } else if (event.code === "ArrowRight") {
+        movePlayer("right", event.timeStamp);
+    } else if (event.code === "Space") {
+        shoot();
+    }
+});
 
-// Update the lives when the player is hit
-function playerHit() {
-  lives--;
-  updateScore();
-}
 
 // Generate the initial set of enemies
 createEnemies();

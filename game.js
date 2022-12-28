@@ -1,9 +1,10 @@
-// Get a reference to the canvas element
 const canvas = document.getElementById("gameCanvas");
 document.body.style.overflow = "hidden";
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
-// Get a reference to the canvas context, which is used to draw on the canvas
+
+const gameOverTitle = document.getElementById('gameOver')
+
 const ctx = canvas.getContext("2d");
 
 // Load the player sprite
@@ -16,10 +17,9 @@ enemySprites[0].src = "enemy1.png";
 enemySprites[1].src = "enemy2.png";
 enemySprites[2].src = "enemy3.png";
 
-// Create the player object
 const player = {
-  x: canvas.width / 2,
-  y: canvas.height -100,
+  x: canvas.width / 2, // the position on the x axis
+  y: canvas.height -100,  // the position on the y axis
   width: 50,
   height: 50,
   speed: 15,
@@ -29,7 +29,6 @@ const player = {
 // Create the enemies array
 const enemies = [];
 
-// Create a function to generate enemies
 function createEnemies() {
   // Clear the enemies array
   enemies.length = 0;
@@ -49,35 +48,40 @@ function createEnemies() {
   }
 }
 
-// Create the bullets array
 const bullets = [];
 let lastTimestamp = 0;
-// Create a function to handle player movement
-function movePlayer(direction,timestamp) {
-    // Calculate the elapsed time since the last frame
-  const elapsed = timestamp - lastTimestamp;
 
-  // Update the last timestamp
-  lastTimestamp = timestamp;
-
-  // Calculate the distance to move based on the elapsed time and player speed
-  const distance = elapsed * player.speed;
-  // Update the player's position based on the direction
-  if (direction === "left") {
-    player.x -= player.speed;
-  } else if (direction === "right") {
-    player.x += player.speed;
+function movePlayer(direction) {
+ 
+  switch(direction){
+    case "left":
+      player.x -= player.speed;
+      break;
+    case "right":
+      player.x += player.speed;
+      break;
+    case "up":
+      player.y -= player.speed;
+      break;
+    case "down":
+      player.y += player.speed;
+      break;
+    default:
+      null
   }
-
   // Keep the player within the bounds of the canvas
   if (player.x < 0) {
     player.x = 0;
   } else if (player.x > canvas.width - player.width) {
     player.x = canvas.width - player.width;
   }
+  if (player.y < 0) {
+    player.y = 0;
+  } else if (player.y > canvas.height - player.height) {
+    player.y = canvas.height - player.height;
+  }
 }
 
-// Create a function to handle enemy movement
 function moveEnemies() {
   // Move each enemy down by 2 pixels
   for (const enemy of enemies) {
@@ -85,7 +89,6 @@ function moveEnemies() {
   }
 }
 
-// Create a function to handle bullet movement
 function moveBullets() {
   // Move each bullet up by 10 pixels
   for (const bullet of bullets) {
@@ -93,7 +96,6 @@ function moveBullets() {
   }
 }
 
-// Create a function to handle player shooting
 function shoot() {
 // Add a new bullet object to the bullets array
     bullets.push({
@@ -104,7 +106,6 @@ function shoot() {
     });
 }
     
-// Create a function to check for collisions
 function checkCollisions() {
   // Check for collisions between bullets and enemies
   for (let i = 0; i < bullets.length; i++) {
@@ -173,48 +174,95 @@ function draw() {
     }
 }
 
-// Create a function to update the game state
+function gameOver(){
+    lives += 3;
+    updateScore();
+    gameOverTitle.classList.remove('hidden');
+}
+
+// score
+const scoreElement = document.getElementById("score");
+let score = 0;
+let lives = 3;
+
 function update() {
 // Move the player and enemies
     movePlayer();
     moveEnemies();
     moveBullets();
-
+//regenerate enemies
+    if(enemies.length === 0 ) {
+      createEnemies()
+      moveEnemies()
+      clearInterval(enemyInterval);
+      enemyInterval = null;
+      drawEnemies()
+    }
 // Check for collisions
     checkCollisions();
-
+// check lives
+    if(lives === 0){
+      gameOver();
+      clearInterval(gameInterval);
+      gameInterval = null;
+      document.getElementById('restart').addEventListener('click', (e) => {
+        console.log('it works')
+        enemies.length =0
+        score = 0
+        drawGame()
+        drawEnemies()
+        gameOverTitle.classList.add('hidden')
+      })
+    }
 // Draw the game
     draw();
 }
 
-// Get a reference to the score element
-const scoreElement = document.getElementById("score");
 
-// Set up a score variable to track the player's score
-let score = 0;
-
-// Set up a lives variable to track the player's lives
-let lives = 3;
 
 // Update the score element's content
 function updateScore() {
   scoreElement.innerHTML = `Score: ${score} Lives: ${lives}`;
 }
 
-// Set up the event listeners to handle player input
 document.addEventListener("keydown", (event) => {
-    if (event.code === "ArrowLeft") {
+    switch(event.code) {
+      case "ArrowLeft":
         movePlayer("left", event.timeStamp);
-    } else if (event.code === "ArrowRight") {
+        break;
+      case "ArrowRight":
         movePlayer("right", event.timeStamp);
-    } else if (event.code === "Space") {
+        break;
+      case "ArrowUp":
+        movePlayer("up", event.timeStamp);
+        break;
+      case "ArrowDown":
+        movePlayer("down", event.timeStamp);
+        break;
+      case "Space":
         shoot();
+        break;
     }
 });
 
+// Generate enemies
+let enemyInterval
+function drawEnemies() {
+  if (!enemyInterval) {
+    enemyInterval = setInterval(()=>{
+      createEnemies();
+      moveEnemies();
+    }, 30000);
+  }
+}
+drawEnemies();
 
-// Generate the initial set of enemies
-createEnemies();
-
-// Start the game loop
-setInterval(update, 1000 / 30); // 60 frames per second
+// render the game
+let gameInterval
+function drawGame() {
+  // check if an interval has already been set up
+  if (!gameInterval) {
+    gameInterval = setInterval(update, 1000 / 30); // 60 frames per second
+  }
+}
+drawGame();

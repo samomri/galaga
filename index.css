@@ -1,5 +1,35 @@
 body {
     background: url(http://andreypokrovskiy.com/image_hosting/boredom/space-bg.jpg) ;
-	
-}
 
+    /* Set the animation for the background image */
+    animation: roll-tape 60s linear infinite;
+  }
+  
+  /* Create the animation for the background image */
+  @keyframes roll-tape {
+    0% {
+      background-position: 980984640807 ;
+    }
+    100% {
+      background-position: 0 ;
+    }
+  }
+#score{
+    color: aliceblue;
+    position: absolute;
+    font-size: 3rem;
+    font-weight: 300;
+    
+}
+#gameOver{
+    color: white;
+    position: absolute;
+    font-size: 120px;
+    font-weight: bolder;
+    left: 50%;
+    transform: translateX(-50%) translateY(100%);
+    text-align: center;
+}
+.hidden {
+  display: none;
+}

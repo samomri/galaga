@@ -176,6 +176,10 @@ function draw() {
 
 function gameOver(){
     lives += 3;
+    level = 1;
+    speed = 20;
+    timer = 30000;
+    add();
     updateScore();
     gameOverTitle.classList.remove('hidden');
 }
@@ -197,6 +201,7 @@ function update() {
       clearInterval(enemyInterval);
       enemyInterval = null;
       drawEnemies()
+      levels()
     }
 // Check for collisions
     checkCollisions();
@@ -244,6 +249,29 @@ document.addEventListener("keydown", (event) => {
         break;
     }
 });
+let level = 0
+let speed = 20
+let timer = 30000
+const levelTitle = document.getElementById('gameLevel')
+const add = () => levelTitle.classList.add('hidden')
+const remove = () => levelTitle.classList.remove('hidden')
+
+function levels() {
+  if (timer >= 20000){
+  levelTitle.innerHTML = `LEVEL<br/> ${level}`;
+  remove();
+  level++
+  speed += 15
+  timer -= 1500
+  setTimeout(add, 3000);
+  } else {
+    timer = 18000;
+    levelTitle.innerHTML = `LEVEL<br/> ${level}`;
+    remove();
+    level++
+    setTimeout(add, 3000);
+  }
+}
 
 // Generate enemies
 let enemyInterval
@@ -252,17 +280,18 @@ function drawEnemies() {
     enemyInterval = setInterval(()=>{
       createEnemies();
       moveEnemies();
-    }, 30000);
+      levels()
+    }, timer);
   }
 }
 drawEnemies();
+levels()
 
 // render the game
 let gameInterval
 function drawGame() {
-  // check if an interval has already been set up
   if (!gameInterval) {
-    gameInterval = setInterval(update, 1000 / 30); // 60 frames per second
+    gameInterval = setInterval(update, 1000 / speed); // 60 frames per second
   }
 }
 drawGame();

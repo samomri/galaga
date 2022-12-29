@@ -11,6 +11,7 @@ const explosion = document.getElementById("explosion");
 const laser = document.getElementById("laser");
 const levelSound = document.getElementById("level");
 explosion.volume = 0.6
+
 // Load the player sprite
 const playerSprite = new Image();
 playerSprite.src = "player.png";
@@ -155,7 +156,6 @@ function checkCollisions() {
     }
   }
 }
-// Create a function to draw the game state
 function draw() {
 // Clear the canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);

@@ -7,6 +7,10 @@ const gameOverTitle = document.getElementById('gameOver')
 
 const ctx = canvas.getContext("2d");
 
+const explosion = document.getElementById("explosion");
+const laser = document.getElementById("laser");
+const levelSound = document.getElementById("level");
+explosion.volume = 0.6
 // Load the player sprite
 const playerSprite = new Image();
 playerSprite.src = "player.png";
@@ -123,6 +127,7 @@ function checkCollisions() {
             bullets.splice(i, 1);
             enemies.splice(j, 1);
             score += 100;
+            explosion.play();
             updateScore();
             i--;
             break;
@@ -145,6 +150,7 @@ function checkCollisions() {
         player.speed=15,
         player.hit=true,
         lives--;
+        explosion.play();
         updateScore();
     }
   }
@@ -246,9 +252,10 @@ document.addEventListener("keydown", (event) => {
         break;
       case "Space":
         shoot();
+        laser.play()
         break;
     }
-});
+}); 
 let level = 0
 let speed = 20
 let timer = 30000
@@ -280,7 +287,8 @@ function drawEnemies() {
     enemyInterval = setInterval(()=>{
       createEnemies();
       moveEnemies();
-      levels()
+      levels();
+      levelSound.play();
     }, timer);
   }
 }
